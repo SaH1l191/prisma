@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id String @id @default(cuid())
+  email String @unique
+  hashedPassword  String
+  posts   Post[]
+}
+
+
+// one to many realtion btwn user and posts
+
+
+model Post {
+  id    String    @id @default(cuid())
+  title String
+  slug String @unique
+  content String
+  published Boolean @default(false)
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+
+  author User @relation(fields: [authorId],references: [id])
+  authorId String
+// or alternatie syntax is 
+// authors User[]
+
+//user ? indicates it is optional not compulsory required while inputiing
+//improving the read performance by definning an index slug type@index
+// The @index attribute is used to create a database index on one or more fields of a model. Indexes are crucial for improving read performance, especially for queries that frequently search or filter based on those fields.
+
+
+  @@index(slug)
+
+}
+
+
+
+//added a slug for jsut for hyphens between the name of the specific post 
